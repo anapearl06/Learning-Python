@@ -1,9 +1,9 @@
-snack = input("Enter your preffered snack:").lower()
+Snack = input("Enter your preffered snack:").lower()
 
-# print(f"user said: {snack}")
+# print(f"user said: {Snack}")
 
-if snack == "cookies" or snack == "samosa":
-    print(f"Great Choice! We'll serve you Sir! {snack}")
+if Snack == "cookies" or Snack == "samosa":
+    print(f"Great Choice! We'll serve you Sir! {Snack}")
 
 else:
     print(f"Sorry Sir! We only serve cookies or samosa with tea")
