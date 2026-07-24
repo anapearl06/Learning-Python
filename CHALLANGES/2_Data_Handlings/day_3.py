@@ -1,108 +1,247 @@
 """
- Challenge:  Personal Movie Tracker with JSON
+=========================================
+Day 3 : Personal Movie Tracker
+=========================================
 
-Create a Python CLI tool that lets users maintain their own personal movie database, like a mini IMDb.
+A CLI-based movie tracker that stores movie
+information permanently in a JSON file.
 
-Your program should:
-1. Store all movie data in a `movies.json` file.
-2. Each movie should have:
-   - Title
-   - Genre
-   - Rating (out of 10)
-3. Allow the user to:
-   - Add a movie
-   - View all movies
-   - Search movies by title or genre
-   - Exit the app
+Features:
+✔ Add a movie
+✔ View all movies
+✔ Search by title or genre
+✔ Prevent duplicate movie titles
+✔ Validate movie ratings
+✔ Store data permanently in movies.json
 
-Bonus:
-- Prevent duplicate titles from being added
-- Format output in a clean table
-- Use JSON for reading/writing structured data
+Concepts Covered:
+✔ JSON File Handling
+✔ Lists
+✔ Dictionaries
+✔ Functions
+✔ Loops
+✔ List Comprehension
+✔ Exception Handling
+✔ Data Validation
+✔ match-case
 """
 
-import os
-import json
 
-FILENAME = "movies.json"
+import json
+import os
+
+
+MOVIE_FILE = "movies.json"
+
 
 def load_movies():
-    if not os.path.exists(FILENAME):
+    """
+    Load movie data from the JSON file.
+
+    If the file does not exist,
+    return an empty list.
+    """
+
+    if not os.path.exists(MOVIE_FILE):
         return []
-    with open(FILENAME, "r", encoding="utf-8") as f:
-        return json.load(f)
-    
-def save_movies(movies):
-    with open(FILENAME, "w", encoding="utf-8") as f:
-        json.dump(movies, f, indent=2)
 
-
-def add_movies(movies):
-    title = input("Enter the movie name: ").strip().lower()
-
-    if any(movie["title"].lower() == title for movie in movies):
-        print("Movie already exists")
-        return
-    genre = input("Genre: ").strip().lower()
     try:
-        rating = float(input("Enter rating(0-10): "))
-        if not (0 <= rating <= 10):
-            raise ValueError
+        with open(MOVIE_FILE, "r", encoding="utf-8") as file:
+            return json.load(file)
+
+    except json.JSONDecodeError:
+        print("⚠️ Movie file is corrupted or empty.")
+        return []
+
+
+def save_movies(movies):
+    """
+    Save the current movie list
+    into the JSON file.
+    """
+
+    with open(MOVIE_FILE, "w", encoding="utf-8") as file:
+
+        json.dump(
+            movies,
+            file,
+            indent=4
+        )
+
+
+def add_movie(movies):
+    """Add a new movie to the movie database."""
+
+    title = input(
+        "\nEnter movie title: "
+    ).strip()
+
+    # Prevent empty movie titles.
+    if not title:
+        print("❌ Movie title cannot be empty.")
+        return
+
+    # Prevent duplicate movie titles.
+    if any(
+        movie["title"].lower() == title.lower()
+        for movie in movies
+    ):
+        print("❌ This movie already exists.")
+        return
+
+    genre = input(
+        "Enter movie genre: "
+    ).strip()
+
+    if not genre:
+        print("❌ Genre cannot be empty.")
+        return
+
+    # Validate movie rating.
+    try:
+
+        rating = float(
+            input("Enter rating (0-10): ")
+        )
+
+        if not 0 <= rating <= 10:
+            print("❌ Rating must be between 0 and 10.")
+            return
+
     except ValueError:
-        print("Please enter valid number")
+
+        print("❌ Please enter a valid number.")
         return
-    
-    movies.append({"title": title, "genre": genre, "rating": rating})
+
+    # Create a dictionary for the new movie.
+    movie = {
+        "title": title,
+        "genre": genre,
+        "rating": rating
+    }
+
+    # Add the movie to the list.
+    movies.append(movie)
+
+    # Save updated list to JSON.
     save_movies(movies)
-    print("Movie added ✅")
-    
-    
-def search_movies(movies):
-    term = input("Enter the title or genre: ").strip().lower()
 
-    results = [
-        movie for movie in movies 
-        if term in movie['title'].lower() or term in movie['genre'].lower()
-     
-    ]
-    if not results:
-        print("No matching result")
-        return
-    print(f" Found {len(results)} result(s)")
-
-    for movie in results:
-        print(f"{movie["title"]} -- {movie["genre"]} -- {movie["rating"]}")
+    print(f"✅ '{title}' added successfully!")
 
 
 def view_movies(movies):
+    """Display all movies in the database."""
+
     if not movies:
-        print("NO movies in DB")
+        print("\n📭 No movies found.")
         return
-    print("-"*30)
+
+    print("\n" + "=" * 60)
+    print("🍿 MY MOVIE DATABASE".center(60))
+    print("=" * 60)
+
+    print(
+        f"{'Title':<25}"
+        f"{'Genre':<20}"
+        f"{'Rating':<10}"
+    )
+
+    print("-" * 60)
+
     for movie in movies:
-        print(f"{movie["title"]} -- {movie["genre"]} -- {movie["rating"]}")
-    print("-"*30)
+
+        print(
+            f"{movie['title']:<25}"
+            f"{movie['genre']:<20}"
+            f"{movie['rating']:<10.1f}"
+        )
+
+    print("=" * 60)
 
 
+def search_movies(movies):
+    """Search movies by title or genre."""
 
-def run_movie_db():
+    search_term = input(
+        "\nSearch by title or genre: "
+    ).strip().lower()
+
+    if not search_term:
+        print("❌ Search term cannot be empty.")
+        return
+
+    # Find movies where the search term
+    # exists in either title or genre.
+    results = [
+        movie
+        for movie in movies
+        if (
+            search_term in movie["title"].lower()
+            or
+            search_term in movie["genre"].lower()
+        )
+    ]
+
+    if not results:
+        print("❌ No matching movies found.")
+        return
+
+    print(
+        f"\n🔎 Found {len(results)} movie(s):"
+    )
+
+    print("-" * 60)
+
+    for movie in results:
+
+        print(
+            f"🎬 {movie['title']} | "
+            f"Genre: {movie['genre']} | "
+            f"Rating: {movie['rating']}/10"
+        )
+
+    print("-" * 60)
+
+
+def run_movie_tracker():
+
+    # Load existing movies when program starts.
     movies = load_movies()
 
     while True:
-        print("\n🍿 MyMovieDB")
+
+        print("\n🍿 MY MOVIE TRACKER")
+        print("-" * 30)
         print("1. Add Movie")
         print("2. View All Movies")
         print("3. Search Movie")
         print("4. Exit")
-    
-        choice = input("Choose an option (1-4): ").strip()
+
+        choice = input(
+            "\nChoose an option (1-4): "
+        ).strip()
+
         match choice:
-            case "1": add_movies(movies)
-            case "2": view_movies(movies)
-            case "3": search_movies(movies)
-            case "4": break
-            case _: print("Enter valid choice") 
+
+            case "1":
+                add_movie(movies)
+
+            case "2":
+                view_movies(movies)
+
+            case "3":
+                search_movies(movies)
+
+            case "4":
+                print("\n👋 Goodbye! See you next time.")
+                break
+
+            case _:
+                print(
+                    "❌ Invalid choice. "
+                    "Please select 1-4."
+                )
 
 
 if __name__ == "__main__":
-    run_movie_db()
+    run_movie_tracker()
