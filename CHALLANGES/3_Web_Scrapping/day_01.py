@@ -26,7 +26,7 @@ def get_h2_headers(url):
     except requests.RequestException as e:
         print(f"Failed to fetch page: \n {e}")
         return []
-    
+
     soup = BeautifulSoup(response.text, "html.parser")
     h2_tags = soup.find_all("h2")
     print(h2_tags)
