@@ -1,6 +1,6 @@
 # Learning Python 🐍✨ 
 
-Welcome to my Python learning repository!  
+Welcome to my Python learning repository!   
 
 This repository contains my journey of learning Python programming from basics to advanced concepts. I am currently improving my coding skills, problem-solving ability, and building small projects step by step. 🚀
 
