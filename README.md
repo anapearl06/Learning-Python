@@ -7,7 +7,7 @@ This repository contains my journey of learning Python programming from basics t
 ---
 
 ## 📚 What I Am Learning
-
+   
 ### Python Basics
 - Variables & Data Types
 - Input & Output
